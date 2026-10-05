@@ -95,3 +95,25 @@ body.prof #pv{opacity:1}#pv{position:fixed;top:0;left:50%;transform:translateX(-
 #cf{position:fixed;inset:0;z-index:120;pointer-events:none;width:100%;height:100%}.fly{position:fixed;z-index:130;width:16px;height:16px;border-radius:50%;background:var(--go);box-shadow:0 0 16px var(--go);pointer-events:none}
 .g2{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:10px;background:#1aa84b;color:#fff;font:800 12px Manrope,sans-serif;text-decoration:none;letter-spacing:.02em}.g2 svg{width:14px;height:14px}.mt{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.mt .st{margin-top:0}
 .bt4{grid-column:span 2}.no{color:var(--t2);text-align:center;padding:34px 0}
+/* v5 */
+:root{--fn:'Montserrat','Inter',system-ui,sans-serif}
+body{font-variant-numeric:lining-nums}body:after{display:none}
+.mc .pr,.nw small,.sb b,.tot b,.ci em,.stat b,.bdg,.pill,.pm .ch,.q span,.st,.cnt,#pp,.row b,.ci small,.chip{font-family:var(--fn)}
+.row b{font-family:Manrope,sans-serif}.stat b{font-weight:700;font-size:26px}.sb b,.tot b{font-weight:700;letter-spacing:-.01em}.mc .pr{font-weight:700;font-size:12.5px}
+.tot{font:700 22px var(--ff)}.tot b{font:700 24px var(--fn);color:var(--go2)}.sb b{font:700 22px var(--fn);color:var(--go2)}
+.btn{box-shadow:0 8px 20px #e4b05533}.btn.gl{box-shadow:none}
+.hb,#bk{width:42px;height:42px}#ht{gap:9px}#ht svg{width:34px;height:34px}
+#pbg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:var(--W);height:100vh;z-index:1;opacity:0;transition:opacity .6s;pointer-events:none;background:center 25%/cover no-repeat}#pbg:after{content:"";position:absolute;inset:0;background:linear-gradient(#050907e6,#050907a6 30%,#050907c4 65%,#050907f2)}
+body.bgp #pbg{opacity:1;background-image:url(assets/1.jpg)}body.bgc #pbg{opacity:1;background-image:url(assets/3.jpg)}
+.pcard{background:rgba(9,18,14,.8)!important;backdrop-filter:blur(14px)}
+nav a.cb{margin:-30px 6px 0}nav a.cb svg{width:28px;height:28px}.bdg{top:2px;right:calc(50% - 24px);box-shadow:0 0 0 2px #09120e}
+.cups{gap:14px 10px}.cups svg{width:84px;margin:0 auto 6px}.cups small{font:700 13px var(--fn);color:#8d9a94}.cups small.on{color:var(--go2)}.cp.on{filter:drop-shadow(0 0 12px #2fd29a66)}.cp.gift{filter:drop-shadow(0 0 14px #e4b055aa)}.cp.ready{filter:drop-shadow(0 0 10px #e4b05555)}
+.cnt{font:700 20px var(--fn);color:var(--go2)}.cnt span{color:var(--t3);font-size:15px}
+.qgen{display:flex;flex-direction:column;align-items:center;padding:8px 0 4px}.rg{position:relative;width:170px;height:170px}.rg svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 1.2s linear infinite}.lgc{position:absolute;inset:34px;color:var(--go2);animation:pls 1.6s ease-in-out infinite}.lgc svg{width:100%;height:100%;display:block}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pls{50%{transform:scale(.88);opacity:.7}}
+.gt{margin:16px 0 14px;color:var(--t);font-weight:700;font-size:14.5px;text-align:center}.pb2{width:70%;height:4px;border-radius:4px;background:#ffffff1f;overflow:hidden;margin-bottom:16px}.pb2 i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em3),var(--go2));animation:fil 4s linear forwards}@keyframes fil{to{width:100%}}
+.qa{display:flex;flex-direction:column;gap:10px}.qr{margin-top:0}
+.av{overflow:hidden;padding:0}.av img{width:100%;height:100%;object-fit:cover;border-radius:50%}.av svg{width:60px;height:60px}
+.stat span{display:block;line-height:1.25;padding:0 6px}.lk{display:flex;align-items:center;gap:14px;margin-top:12px;text-decoration:none;color:var(--t)}.lk>div{flex:1}.lk b{display:block;font-size:15px}.lk small{color:var(--t2);font-size:12.5px}.lk svg:first-child{color:var(--go2);width:26px;height:26px}
+.gisb{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--t)}.gisb>div{flex:1}.gisb b{display:block;font-size:16px}.gisb small{color:var(--t2)}.gi{width:44px;height:44px;border-radius:14px;background:#1aa84b;color:#fff;display:grid;place-items:center}
+body.bgp .sh h2,body.bgc .sh h2,body.prof .sh h2{text-shadow:0 2px 16px #000}
