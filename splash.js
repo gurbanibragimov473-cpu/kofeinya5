@@ -1,23 +1,217 @@
-(function(){
-const sl=$('#sl'),cv=$('#fw'),cx=cv.getContext('2d'),spl=$('#splash');sl.setAttribute('viewBox',LOGO.vb.join(' '));
-sl.innerHTML=`<path class="fill" d="${LOGO.d}"/><path class="pen p2" pathLength="1" d="${LOGO.d}"/><path class="pen" pathLength="1" d="${LOGO.d}"/>`;
-const st=$('#stars');for(let i=0;i<26;i++){const s=document.createElement('div'),z=6+Math.random()*12;s.className='st1';s.style.cssText=`left:${4+Math.random()*92}%;top:${Math.random()*92}%;width:${z}px;height:${z}px;animation:tw ${1.3+Math.random()*1.4}s ${.2+Math.random()*2.2}s infinite both`;s.innerHTML='<i></i>';st.appendChild(s)}
-const pen=sl.querySelector('.pen:not(.p2)'),p2=sl.querySelector('.p2'),L=pen.getTotalLength(),dpr=Math.min(2,devicePixelRatio||1);
-function rs(){cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}rs();addEventListener('resize',rs);
-const D=3800,HOLD=2400,M=[[0,'Загружаем меню и атмосферу...'],[30,'Обжариваем зёрна...'],[60,'Готовим десерты...'],[88,'Почти готово...'],[100,'Добро пожаловать']];
-const Pt=[];let lit=false,tl=0,last=0,t0=0,done=false,tx=-99,ty=-99,fl=0;
-const emit=(x,y,a,v,l,s)=>Pt.push({x,y,px:x,py:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:0,m:l,s});
-const col=k=>k<.15?[255,255,235]:k<.45?[255,235-(k-.15)/.3*50,170-(k-.15)/.3*100]:k<.8?[255-(k-.45)/.35*30,185-(k-.45)/.35*100,70-(k-.45)/.35*50]:[220-(k-.8)/.2*100,85-(k-.8)/.2*60,20];
-function glow(x,y,r,a){const g=cx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(255,255,245,${a})`);g.addColorStop(.25,`rgba(255,226,140,${a*.8})`);g.addColorStop(.6,`rgba(255,140,30,${a*.3})`);g.addColorStop(1,'rgba(255,100,0,0)');cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r,0,6.283);cx.fill()}
-function frame(now){if(done)return;if(!t0){t0=now;last=now}const t=now-t0,dt=Math.min(.05,(now-last)/1000||.016);last=now;
-cx.clearRect(0,0,innerWidth,innerHeight);cx.globalCompositeOperation='lighter';cx.lineCap='round';
-if(t<D){const e=Math.pow(t/D,.92),pt=pen.getPointAtLength(e*L).matrixTransform(pen.getScreenCTM());pen.style.strokeDashoffset=1-e;p2.style.strokeDashoffset=1-Math.max(0,e-.03);tx=pt.x;ty=pt.y;fl=.85+Math.random()*.3;
- for(let i=0,n=Math.round(dt*300);i<n;i++)emit(tx,ty,Math.random()*6.283,50+Math.random()*230,350+Math.random()*650,.7+Math.random()*1.5);
- glow(tx,ty,26*fl,1);glow(tx,ty,9,1);cx.strokeStyle='rgba(255,246,210,.85)';cx.lineWidth=1.2;const rl=16*fl,ro=Math.random()*1.5;for(let k=0;k<4;k++){const a=ro+k*1.5708;cx.beginPath();cx.moveTo(tx,ty);cx.lineTo(tx+Math.cos(a)*rl,ty+Math.sin(a)*rl);cx.stroke()}}
-else if(!lit){lit=true;pen.style.strokeDashoffset=0;p2.style.strokeDashoffset=0;sl.classList.add('lit');spl.classList.add('lit');tl=now;const X=innerWidth/2;for(let i=0;i<46;i++){const pt=pen.getPointAtLength(Math.random()*L).matrixTransform(pen.getScreenCTM());emit(pt.x,pt.y,Math.random()*6.283,30+Math.random()*130,700+Math.random()*900,.7+Math.random()*1.2)}}
-for(let i=Pt.length-1;i>=0;i--){const p=Pt[i];p.l+=dt*1000;if(p.l>=p.m){Pt.splice(i,1);continue}const k=p.l/p.m,d=Math.pow(.3,dt);p.px=p.x;p.py=p.y;p.vx*=d;p.vy=p.vy*d+260*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const c=col(k),a=Math.max(0,1-k*k);cx.strokeStyle=`rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;cx.lineWidth=p.s*(1-k*.5);cx.beginPath();cx.moveTo(p.px,p.py);cx.lineTo(p.x,p.y);cx.stroke()}
-const v=Math.min(100,t/(D+1200)*100),e=1-Math.pow(1-v/100,2),w=e*100;$('#pf').style.width=w+'%';$('#pp').textContent=Math.floor(w)+'%';$('#pt').textContent=M.filter(m=>w>=m[0]).pop()[1];
-if(lit&&now-tl>1400+HOLD){done=true;spl.classList.add('out');document.body.classList.remove('lock');$('#sv').pause();setTimeout(()=>spl.remove(),1100);return}
-requestAnimationFrame(frame)}
-requestAnimationFrame(frame);
-})();
+(function runSplash() {
+  const DRAW_MS = 1900;
+  const FLASH_MS = 1100;
+  const ZOOM_MS = 1000;
+  const STATUS_STEPS = [
+    [0, 'Загружаем меню и атмосферу...'],
+    [35, 'Обжариваем зёрна...'],
+    [70, 'Готовим десерты...'],
+    [92, 'Добро пожаловать']
+  ];
+
+  const splash = document.getElementById('splash');
+  const logoWrap = document.getElementById('splashLogoWrap');
+  const logo = document.getElementById('splashLogo');
+  const canvas = document.getElementById('splashCanvas');
+  const context = canvas.getContext('2d');
+  const fill = document.getElementById('splashFill');
+  const cup = document.getElementById('splashCup');
+  const statusText = document.getElementById('splashText');
+  const percentText = document.getElementById('splashPercent');
+
+  const [boxX, boxY, boxSize] = LOGO.vb;
+  const centerX = boxX + boxSize / 2;
+  const centerY = boxY + boxSize / 2;
+  const ringRadius = (boxSize - 14) / 2;
+  const pixelRatio = Math.min(2, window.devicePixelRatio || 1);
+
+  logo.setAttribute('viewBox', LOGO.vb.join(' '));
+  logo.innerHTML =
+    `<circle class="splash-disc" cx="${centerX}" cy="${centerY}" r="${ringRadius * 1.02}"/>` +
+    `<path class="splash-ink" d="${LOGO.d}"/>` +
+    `<path class="splash-pencil splash-pencil-soft" pathLength="1" d="${LOGO.d}"/>` +
+    `<path class="splash-pencil" pathLength="1" d="${LOGO.d}"/>`;
+
+  const pencilStrokes = Array.from(logo.querySelectorAll('.splash-pencil'));
+  const sparks = [];
+  let startTime = null;
+  let lastFrame = 0;
+  let colored = false;
+  let zooming = false;
+  let finished = false;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth * pixelRatio;
+    canvas.height = window.innerHeight * pixelRatio;
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  }
+
+  function easeInOut(value) {
+    return value < 0.5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2;
+  }
+
+  function emitSpark(x, y, angle, speed, life, size) {
+    sparks.push({
+      x, y, previousX: x, previousY: y,
+      velocityX: Math.cos(angle) * speed,
+      velocityY: Math.sin(angle) * speed,
+      age: 0, life, size
+    });
+  }
+
+  function sparkColor(progress) {
+    if (progress < 0.2) return [255, 255, 236];
+    if (progress < 0.55) return [255, 214 - (progress - 0.2) * 120, 140 - (progress - 0.2) * 200];
+    return [255 - (progress - 0.55) * 200, 150 - (progress - 0.55) * 230, 50];
+  }
+
+  function drawGlow(x, y, radius, alpha) {
+    const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+    gradient.addColorStop(0, `rgba(255,255,245,${alpha})`);
+    gradient.addColorStop(0.3, `rgba(255,224,140,${alpha * 0.75})`);
+    gradient.addColorStop(1, 'rgba(255,140,30,0)');
+    context.fillStyle = gradient;
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  function drawFlashRing(elapsed) {
+    const rect = logoWrap.getBoundingClientRect();
+    const originX = rect.left + rect.width / 2;
+    const originY = rect.top + rect.height / 2;
+    const radius = (rect.width / boxSize) * ringRadius;
+    const progress = elapsed / FLASH_MS;
+    const sweep = easeInOut(progress) * Math.PI;
+    const shockAlpha = Math.max(0, 1 - elapsed / 380);
+
+    context.lineCap = 'round';
+    if (shockAlpha > 0) {
+      context.strokeStyle = `rgba(255,236,170,${shockAlpha})`;
+      context.lineWidth = 6;
+      context.beginPath();
+      context.arc(originX, originY, radius, 0, Math.PI * 2);
+      context.stroke();
+    }
+
+    [1, -1].forEach((direction) => {
+      const head = -Math.PI / 2 + direction * sweep;
+      for (let step = 0; step < 26; step += 1) {
+        const tailAngle = head - direction * step * 0.05;
+        const alpha = Math.pow(1 - step / 26, 2);
+        context.strokeStyle = `rgba(255,232,150,${alpha})`;
+        context.lineWidth = 7 * (1 - step / 40);
+        context.beginPath();
+        context.arc(originX, originY, radius, tailAngle - direction * 0.055, tailAngle, direction < 0);
+        context.stroke();
+      }
+      const headX = originX + Math.cos(head) * radius;
+      const headY = originY + Math.sin(head) * radius;
+      drawGlow(headX, headY, 34, 1);
+      for (let count = 0; count < 5; count += 1) {
+        const outward = head + (Math.random() - 0.5) * 1.1;
+        emitSpark(headX, headY, outward, 80 + Math.random() * 260, 500 + Math.random() * 700, 0.8 + Math.random() * 1.6);
+      }
+    });
+  }
+
+  function drawSparks(deltaSeconds) {
+    context.globalCompositeOperation = 'lighter';
+    for (let index = sparks.length - 1; index >= 0; index -= 1) {
+      const spark = sparks[index];
+      spark.age += deltaSeconds * 1000;
+      if (spark.age >= spark.life) {
+        sparks.splice(index, 1);
+        continue;
+      }
+      const progress = spark.age / spark.life;
+      const drag = Math.pow(0.3, deltaSeconds);
+      spark.previousX = spark.x;
+      spark.previousY = spark.y;
+      spark.velocityX *= drag;
+      spark.velocityY = spark.velocityY * drag + 240 * deltaSeconds;
+      spark.x += spark.velocityX * deltaSeconds;
+      spark.y += spark.velocityY * deltaSeconds;
+      const [red, green, blue] = sparkColor(progress);
+      context.strokeStyle = `rgba(${red | 0},${green | 0},${blue | 0},${1 - progress * progress})`;
+      context.lineWidth = spark.size * (1 - progress * 0.5);
+      context.beginPath();
+      context.moveTo(spark.previousX, spark.previousY);
+      context.lineTo(spark.x, spark.y);
+      context.stroke();
+    }
+  }
+
+  function updateProgress(elapsed) {
+    const total = DRAW_MS + FLASH_MS;
+    const ratio = Math.min(1, elapsed / total);
+    const percent = (1 - Math.pow(1 - ratio, 1.8)) * 100;
+    fill.style.width = `${percent}%`;
+    cup.style.left = `${percent}%`;
+    percentText.textContent = `${Math.floor(percent)}%`;
+    const step = STATUS_STEPS.filter(([threshold]) => percent >= threshold).pop();
+    statusText.textContent = step[1];
+  }
+
+  function startZoom() {
+    zooming = true;
+    logoWrap.animate(
+      [
+        { transform: 'scale(1)', opacity: 1 },
+        { transform: 'scale(2.4)', opacity: 1, offset: 0.45 },
+        { transform: 'scale(11)', opacity: 0 }
+      ],
+      { duration: ZOOM_MS, easing: 'cubic-bezier(.6,0,.9,.45)', fill: 'forwards' }
+    );
+    splash.animate(
+      [{ opacity: 1 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }],
+      { duration: ZOOM_MS, easing: 'ease-in', fill: 'forwards' }
+    ).onfinish = finishSplash;
+  }
+
+  function finishSplash() {
+    if (finished) return;
+    finished = true;
+    document.body.classList.remove('is-loading');
+    splash.remove();
+  }
+
+  function frame(now) {
+    if (finished) return;
+    if (startTime === null) {
+      startTime = now;
+      lastFrame = now;
+    }
+    const elapsed = now - startTime;
+    const deltaSeconds = Math.min(0.05, (now - lastFrame) / 1000);
+    lastFrame = now;
+    context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    context.globalCompositeOperation = 'source-over';
+
+    if (elapsed < DRAW_MS) {
+      const drawn = Math.pow(elapsed / DRAW_MS, 0.85);
+      pencilStrokes[0].style.strokeDashoffset = 1 - Math.max(0, drawn - 0.03);
+      pencilStrokes[1].style.strokeDashoffset = 1 - drawn;
+    } else if (!colored) {
+      colored = true;
+      pencilStrokes.forEach((stroke) => { stroke.style.strokeDashoffset = 0; });
+      logo.classList.add('is-colored');
+    }
+
+    const flashElapsed = elapsed - DRAW_MS;
+    if (flashElapsed >= 0 && flashElapsed < FLASH_MS) {
+      context.globalCompositeOperation = 'lighter';
+      drawFlashRing(flashElapsed);
+    }
+    drawSparks(deltaSeconds);
+    updateProgress(elapsed);
+
+    if (flashElapsed >= FLASH_MS && !zooming) startZoom();
+    requestAnimationFrame(frame);
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  requestAnimationFrame(frame);
+  window.setTimeout(finishSplash, 9000);
+}());

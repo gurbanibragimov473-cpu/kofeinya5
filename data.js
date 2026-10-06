@@ -1,49 +1,1165 @@
-const I=(n,s,img,tag,d)=>({n,s,img,tag,d});const z=(...a)=>a.map(x=>[x[0],x[1]]);
-const CATS=[
-{id:'hot',n:'Кофе',items:[
-I('Американо · Бразилия',z(['0,2 л',890],['0,3 л',990]),'tea',0,'Классический американо на зёрнах из Бразилии.'),
-I('Американо · Эфиопия',z(['0,2 л',1090],['0,3 л',1190]),'tea',0,'Яркий американо на эфиопских зёрнах.'),
-I('Капучино',z(['0,2 л',1090],['0,3 л',1390]),'latte'),I('Латте',z(['0,4 л',1390]),'latte'),I('Флэт-уайт',z(['0,2 л',1090]),'latte'),
-I('Раф',z(['0,3 л',1690],['0,4 л',2090]),'latte',0,'Вкусы: пломбир, апельсиновый сахар, дыня, вишня, банан, ананас, нуга-шоколад, малина, булочка с корицей.'),
-I('Горячий шоколад',z(['0,3 л',1090],['0,4 л',1590]),'cocoa','hit'),I('Matcha latte',z(['0,4 л',1390]),'latte')]},
-{id:'ice',n:'Холодный кофе',items:[
-I('ICE Американо',z(['0,3 л',890]),'icecoffee','new'),I('ICE Капучино',z(['0,3 л',1390]),'icecoffee','new'),I('ICE Латте',z(['0,4 л',1390]),'icecoffee'),
-I('Bumble',z(['0,3 л',1490]),'bumble','hit'),I('Эспрессо-тоник',z(['0,4 л',1990]),'icecoffee'),I('ICE Какао',z(['0,4 л',1690]),'icecoffee'),I('ICE Matcha latte',z(['0,4 л',1390]),'icecoffee')]},
-{id:'cold',n:'Авторские напитки',items:[
-I('Убе тоник вишня',z(['0,4 л',1890]),'bumble','new'),I('Matcha тоник грейпфрут',z(['0,4 л',1890]),'bumble','new'),I('Coconut Matcha Cloud',z(['0,4 л',2490]),'icecoffee','new'),
-...['облепиховый','мохито','мохито клубничный'].map(x=>I('Лимонад '+x,z(['0,4 л',1590],['1 л',2990]),'bumble')),
-I('Лимонад малина-барбарис',z(['0,4 л',1590],['1 л',2990]),'bumble','hit'),I('Лимонад манго-маракуя',z(['0,4 л',1590],['1 л',2990]),'bumble'),
-I('Лимонад ананас-банан',z(['0,4 л',1590],['1 л',2990]),'bumble','new'),I('Лимонад щавель-ананас',z(['0,4 л',1590],['1 л',2990]),'bumble','new'),I('Лимонад клубника-грейпфрут',z(['0,4 л',1590],['1 л',2990]),'bumble','new'),
-I('Молочный коктейль · классика',z(['0,4 л',1990]),'icecoffee'),I('Молочный коктейль · фирменный',z(['0,4 л',2190]),'icecoffee',0,'Вкусы: банан, шоколад или малина.')]},
-{id:'tea',n:'Чаи',items:[
-...['Ташкентский'].map(x=>I(x,z(['0,4 л',890],['1 л',1690]),'tea')),
-I('Облепиха',z(['0,4 л',890],['1 л',1690]),'cherry','hit'),I('Солнечный',z(['0,4 л',890],['1 л',1690]),'cherry','hit'),I('Смородина',z(['0,4 л',890],['1 л',1690]),'cherry'),
-I('Малина',z(['0,4 л',890],['1 л',1690]),'cherry'),I('Малина-барбарис',z(['0,4 л',890],['1 л',1690]),'cherry'),I('Глинтвейн',z(['0,4 л',1090],['1 л',1990]),'cherry'),
-I('Карак чай',z(['0,3 л',1190],['1 л',2990]),'tea'),I('Чай чёрный / зелёный',z(['0,3 л',450],['1 л',990]),'tea')]},
-{id:'dess',n:'Десерты',items:[
-I('Медовик',z(['порция',1690]),'honey','hit'),I('Наполеон',z(['порция',1890]),'honey','new'),I('Павлова',z(['порция',1590]),'brulee','new'),
-I('Чизкейк классический',z(['порция',1890]),'berry'),I('Чизкейк фисташковый',z(['порция',1890]),'berry'),I('Чизкейк солёная карамель',z(['порция',1890]),'choc','hit'),I('Чизкейк баскский',z(['порция',2190]),'choc','new'),
-I('Макаронс',z(['шт',790]),'brulee'),I('Орешки: малина / фундук / рафаэлло',z(['порция',890]),'berry','new')]},
-{id:'bake',n:'Выпечка',items:[
-I('Круассан классический',z(['шт',590]),'croissant'),I('Круассан миндальный',z(['шт',1090]),'croissant'),I('Круассан нутелла-банан',z(['шт',1090]),'croiss2'),I('Круассан со сгущёнкой',z(['шт',1090]),'croissant'),
-I('Круассан синнабон',z(['шт',1190]),'croiss2'),I('Круассан фисташковый',z(['шт',1290]),'croiss2'),I('Круассан OREO',z(['шт',1290]),'croiss2'),I('Круассан клубника со сливками',z(['шт',1290]),'croiss2',0,'Комбо: 4 круассана со скидкой 10%.'),
-I('Булочка с маком',z(['шт',690]),'bun','hit','Комбо: 3 булочки со скидкой 10%.'),I('Булочка с курицей',z(['шт',690]),'bun'),I('Синнабон классика',z(['шт',790]),'bun'),I('Синнабон карамель',z(['шт',790]),'bun')]},
-{id:'kids',n:'Детское меню',items:[
-I('Детский бокс',z(['бокс',2690]),'kids','hit','Бургер, картошка фри, наггетсы и напиток в яркой коробке.'),I('Бургер детский куриный',z(['порция',1490]),'kids'),I('Наггетсы',z(['порция',1690]),'kids'),
-I('Пельмешки разноцветные',z(['порция',1290]),'kids'),I('Куриная котлета с пюре',z(['порция',1590]),'kids'),I('Супчик куриный',z(['порция',990]),'kids')]}];
-CATS.forEach(c=>c.items.forEach((x,i)=>{x.id=c.id+i;x.c=c.id;x.cn=c.n;x.drink=['hot','ice','cold','tea'].includes(c.id)}));
-const ALL=CATS.flatMap(c=>c.items),SYR=['Карамель','Солёная карамель','Шоколад','Кокос','Ваниль','Лесной орех','Айриш','Амаретто'];
-const G=q=>'https://2gis.kz/pavlodar/search/'+encodeURIComponent(q);
-const LOCS=[
-{n:'ул. Торайгырова, 36',a:'1 этаж',h:'Пн — Вс · 08:00–23:00',img:'in1',g:G('Торайгырова 36 Кофейня N5')},
-{n:'ул. Сатпаева, 21',h:'Ежедневно · 08:00–21:00',img:'loc_satp21',g:G('Пекарня N5 Сатпаева 21')},
-{n:'ул. Назарбаева, 52',h:'Ежедневно · 08:00–21:00',img:'loc_nazar',g:G('Пекарня N5 Назарбаева 52')},
-{n:'Батыр Молл',a:'ул. Торайгырова, 58',h:'Ежедневно · 10:00–22:00',img:'loc_batyr',g:G('Батыр Молл Торайгырова 58')},
-{n:'Павильон на набережной',a:'ул. Астана, 100/4, киоск',h:'Пн–Чт 09:00–22:00 · Пт–Вс 09:00–00:00',img:'loc_astana',g:'https://2gis.kz/pavlodar/geo/70030076544816078'}];
-const PROMOS=[
-{id:'p1',col:'#e4b055',c:'−10%',t:'Комбо 3 булочки',s:'любые 3 булочки с витрины',img:'bun',d:'Выбирайте любые 3 булочки с витрины и получайте скидку 10%.',b:'Выбрать булочки',to:'/menu/bake'},
-{id:'p2',col:'#2fd29a',c:'−10%',t:'Комбо 4 круассана',s:'от 4 штук',img:'croiss2',d:'Все виды круассанов с витрины со скидкой 10% при покупке от 4 штук.',b:'Выбрать круассаны',to:'/menu/bake'},
-{id:'p3',col:'#ff8a3d',c:'−30%',t:'Выпечка после 20:00',s:'ежедневно',img:'croissant',d:'Скидка 30% на всю свежую выпечку ежедневно после 20:00.',b:'Смотреть выпечку',to:'/menu/bake'},
-{id:'p4',col:'#7ab7ff',c:'BOX',t:'Детский бокс',s:'фри, бургер, наггетсы',img:'kids',d:'Вкусный сет для детей: хрустящая картошка фри, сочный бургер и наггетсы.',b:'Заказать бокс',to:'/product/kids0'}];
-const BENTO=[['hot','Кофе','latte'],['cold','Лимонады','bumble'],['dess','Десерты','honey'],['bake','Выпечка','croissant']];
-const ATM=['1','in1','wall','in2','3','note','latte','tea','honey','berry','brulee','choc'];
+const MENU_CATEGORIES = [
+  {
+    "id": "hot",
+    "name": "Кофе",
+    "products": [
+      {
+        "id": "hot0",
+        "name": "Американо · Бразилия",
+        "sizes": [
+          {
+            "label": "0,2 л",
+            "price": 890
+          },
+          {
+            "label": "0,3 л",
+            "price": 990
+          }
+        ],
+        "image": "tea",
+        "badge": null,
+        "description": "Классический американо на зёрнах из Бразилии.",
+        "isDrink": true
+      },
+      {
+        "id": "hot1",
+        "name": "Американо · Эфиопия",
+        "sizes": [
+          {
+            "label": "0,2 л",
+            "price": 1090
+          },
+          {
+            "label": "0,3 л",
+            "price": 1190
+          }
+        ],
+        "image": "tea",
+        "badge": null,
+        "description": "Яркий американо на эфиопских зёрнах.",
+        "isDrink": true
+      },
+      {
+        "id": "hot2",
+        "name": "Капучино",
+        "sizes": [
+          {
+            "label": "0,2 л",
+            "price": 1090
+          },
+          {
+            "label": "0,3 л",
+            "price": 1390
+          }
+        ],
+        "image": "latte",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "hot3",
+        "name": "Латте",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1390
+          }
+        ],
+        "image": "latte",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "hot4",
+        "name": "Флэт-уайт",
+        "sizes": [
+          {
+            "label": "0,2 л",
+            "price": 1090
+          }
+        ],
+        "image": "latte",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "hot5",
+        "name": "Раф",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 1690
+          },
+          {
+            "label": "0,4 л",
+            "price": 2090
+          }
+        ],
+        "image": "latte",
+        "badge": null,
+        "description": "Вкусы: пломбир, апельсиновый сахар, дыня, вишня, банан, ананас, нуга-шоколад, малина, булочка с корицей.",
+        "isDrink": true
+      },
+      {
+        "id": "hot6",
+        "name": "Горячий шоколад",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 1090
+          },
+          {
+            "label": "0,4 л",
+            "price": 1590
+          }
+        ],
+        "image": "cocoa",
+        "badge": "hit",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "hot7",
+        "name": "Matcha latte",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1390
+          }
+        ],
+        "image": "latte",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      }
+    ]
+  },
+  {
+    "id": "ice",
+    "name": "Холодный кофе",
+    "products": [
+      {
+        "id": "ice0",
+        "name": "ICE Американо",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 890
+          }
+        ],
+        "image": "icecoffee",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "ice1",
+        "name": "ICE Капучино",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 1390
+          }
+        ],
+        "image": "icecoffee",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "ice2",
+        "name": "ICE Латте",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1390
+          }
+        ],
+        "image": "icecoffee",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "ice3",
+        "name": "Bumble",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 1490
+          }
+        ],
+        "image": "bumble",
+        "badge": "hit",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "ice4",
+        "name": "Эспрессо-тоник",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1990
+          }
+        ],
+        "image": "icecoffee",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "ice5",
+        "name": "ICE Какао",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1690
+          }
+        ],
+        "image": "icecoffee",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "ice6",
+        "name": "ICE Matcha latte",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1390
+          }
+        ],
+        "image": "icecoffee",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      }
+    ]
+  },
+  {
+    "id": "cold",
+    "name": "Авторские напитки",
+    "products": [
+      {
+        "id": "cold0",
+        "name": "Убе тоник вишня",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1890
+          }
+        ],
+        "image": "bumble",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold1",
+        "name": "Matcha тоник грейпфрут",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1890
+          }
+        ],
+        "image": "bumble",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold2",
+        "name": "Coconut Matcha Cloud",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 2490
+          }
+        ],
+        "image": "icecoffee",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold3",
+        "name": "Лимонад облепиховый",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold4",
+        "name": "Лимонад мохито",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold5",
+        "name": "Лимонад мохито клубничный",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold6",
+        "name": "Лимонад малина-барбарис",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": "hit",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold7",
+        "name": "Лимонад манго-маракуя",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold8",
+        "name": "Лимонад ананас-банан",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold9",
+        "name": "Лимонад щавель-ананас",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold10",
+        "name": "Лимонад клубника-грейпфрут",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1590
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "bumble",
+        "badge": "new",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold11",
+        "name": "Молочный коктейль · классика",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1990
+          }
+        ],
+        "image": "icecoffee",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "cold12",
+        "name": "Молочный коктейль · фирменный",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 2190
+          }
+        ],
+        "image": "icecoffee",
+        "badge": null,
+        "description": "Вкусы: банан, шоколад или малина.",
+        "isDrink": true
+      }
+    ]
+  },
+  {
+    "id": "tea",
+    "name": "Чаи",
+    "products": [
+      {
+        "id": "tea0",
+        "name": "Ташкентский",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 890
+          },
+          {
+            "label": "1 л",
+            "price": 1690
+          }
+        ],
+        "image": "tea",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea1",
+        "name": "Облепиха",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 890
+          },
+          {
+            "label": "1 л",
+            "price": 1690
+          }
+        ],
+        "image": "cherry",
+        "badge": "hit",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea2",
+        "name": "Солнечный",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 890
+          },
+          {
+            "label": "1 л",
+            "price": 1690
+          }
+        ],
+        "image": "cherry",
+        "badge": "hit",
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea3",
+        "name": "Смородина",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 890
+          },
+          {
+            "label": "1 л",
+            "price": 1690
+          }
+        ],
+        "image": "cherry",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea4",
+        "name": "Малина",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 890
+          },
+          {
+            "label": "1 л",
+            "price": 1690
+          }
+        ],
+        "image": "cherry",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea5",
+        "name": "Малина-барбарис",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 890
+          },
+          {
+            "label": "1 л",
+            "price": 1690
+          }
+        ],
+        "image": "cherry",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea6",
+        "name": "Глинтвейн",
+        "sizes": [
+          {
+            "label": "0,4 л",
+            "price": 1090
+          },
+          {
+            "label": "1 л",
+            "price": 1990
+          }
+        ],
+        "image": "cherry",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea7",
+        "name": "Карак чай",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 1190
+          },
+          {
+            "label": "1 л",
+            "price": 2990
+          }
+        ],
+        "image": "tea",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      },
+      {
+        "id": "tea8",
+        "name": "Чай чёрный / зелёный",
+        "sizes": [
+          {
+            "label": "0,3 л",
+            "price": 450
+          },
+          {
+            "label": "1 л",
+            "price": 990
+          }
+        ],
+        "image": "tea",
+        "badge": null,
+        "description": "",
+        "isDrink": true
+      }
+    ]
+  },
+  {
+    "id": "dess",
+    "name": "Десерты",
+    "products": [
+      {
+        "id": "dess0",
+        "name": "Медовик",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1690
+          }
+        ],
+        "image": "honey",
+        "badge": "hit",
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess1",
+        "name": "Наполеон",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1890
+          }
+        ],
+        "image": "honey",
+        "badge": "new",
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess2",
+        "name": "Павлова",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1590
+          }
+        ],
+        "image": "brulee",
+        "badge": "new",
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess3",
+        "name": "Чизкейк классический",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1890
+          }
+        ],
+        "image": "berry",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess4",
+        "name": "Чизкейк фисташковый",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1890
+          }
+        ],
+        "image": "berry",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess5",
+        "name": "Чизкейк солёная карамель",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1890
+          }
+        ],
+        "image": "choc",
+        "badge": "hit",
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess6",
+        "name": "Чизкейк баскский",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 2190
+          }
+        ],
+        "image": "choc",
+        "badge": "new",
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess7",
+        "name": "Макаронс",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 790
+          }
+        ],
+        "image": "brulee",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "dess8",
+        "name": "Орешки: малина / фундук / рафаэлло",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 890
+          }
+        ],
+        "image": "berry",
+        "badge": "new",
+        "description": "",
+        "isDrink": false
+      }
+    ]
+  },
+  {
+    "id": "bake",
+    "name": "Выпечка",
+    "products": [
+      {
+        "id": "bake0",
+        "name": "Круассан классический",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 590
+          }
+        ],
+        "image": "croissant",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake1",
+        "name": "Круассан миндальный",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1090
+          }
+        ],
+        "image": "croissant",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake2",
+        "name": "Круассан нутелла-банан",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1090
+          }
+        ],
+        "image": "croiss2",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake3",
+        "name": "Круассан со сгущёнкой",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1090
+          }
+        ],
+        "image": "croissant",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake4",
+        "name": "Круассан синнабон",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1190
+          }
+        ],
+        "image": "croiss2",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake5",
+        "name": "Круассан фисташковый",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1290
+          }
+        ],
+        "image": "croiss2",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake6",
+        "name": "Круассан OREO",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1290
+          }
+        ],
+        "image": "croiss2",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake7",
+        "name": "Круассан клубника со сливками",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 1290
+          }
+        ],
+        "image": "croiss2",
+        "badge": null,
+        "description": "Комбо: 4 круассана со скидкой 10%.",
+        "isDrink": false
+      },
+      {
+        "id": "bake8",
+        "name": "Булочка с маком",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 690
+          }
+        ],
+        "image": "bun",
+        "badge": "hit",
+        "description": "Комбо: 3 булочки со скидкой 10%.",
+        "isDrink": false
+      },
+      {
+        "id": "bake9",
+        "name": "Булочка с курицей",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 690
+          }
+        ],
+        "image": "bun",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake10",
+        "name": "Синнабон классика",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 790
+          }
+        ],
+        "image": "bun",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "bake11",
+        "name": "Синнабон карамель",
+        "sizes": [
+          {
+            "label": "шт",
+            "price": 790
+          }
+        ],
+        "image": "bun",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Детское меню",
+    "products": [
+      {
+        "id": "kids0",
+        "name": "Детский бокс",
+        "sizes": [
+          {
+            "label": "бокс",
+            "price": 2690
+          }
+        ],
+        "image": "kids",
+        "badge": "hit",
+        "description": "Бургер, картошка фри, наггетсы и напиток в яркой коробке.",
+        "isDrink": false
+      },
+      {
+        "id": "kids1",
+        "name": "Бургер детский куриный",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1490
+          }
+        ],
+        "image": "kids",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "kids2",
+        "name": "Наггетсы",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1690
+          }
+        ],
+        "image": "kids",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "kids3",
+        "name": "Пельмешки разноцветные",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1290
+          }
+        ],
+        "image": "kids",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "kids4",
+        "name": "Куриная котлета с пюре",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 1590
+          }
+        ],
+        "image": "kids",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      },
+      {
+        "id": "kids5",
+        "name": "Супчик куриный",
+        "sizes": [
+          {
+            "label": "порция",
+            "price": 990
+          }
+        ],
+        "image": "kids",
+        "badge": null,
+        "description": "",
+        "isDrink": false
+      }
+    ]
+  }
+];
+MENU_CATEGORIES.forEach((category) => {
+  category.products.forEach((product) => {
+    product.categoryId = category.id;
+    product.categoryName = category.name;
+  });
+});
+
+const ALL_PRODUCTS = MENU_CATEGORIES.flatMap((category) => category.products);
+const SYRUPS = [
+  "Карамель",
+  "Солёная карамель",
+  "Шоколад",
+  "Кокос",
+  "Ваниль",
+  "Лесной орех",
+  "Айриш",
+  "Амаретто"
+];
+const LOCATIONS = [
+  {
+    "title": "ул. Торайгырова, 36",
+    "note": "1 этаж",
+    "hours": "Пн — Вс · 08:00–23:00",
+    "image": "in1",
+    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80%D0%BE%D0%B2%D0%B0%2036%20%D0%9A%D0%BE%D1%84%D0%B5%D0%B9%D0%BD%D1%8F%20N5"
+  },
+  {
+    "title": "ул. Сатпаева, 21",
+    "note": "",
+    "hours": "Ежедневно · 08:00–21:00",
+    "image": "loc_satp21",
+    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%9F%D0%B5%D0%BA%D0%B0%D1%80%D0%BD%D1%8F%20N5%20%D0%A1%D0%B0%D1%82%D0%BF%D0%B0%D0%B5%D0%B2%D0%B0%2021"
+  },
+  {
+    "title": "ул. Назарбаева, 52",
+    "note": "",
+    "hours": "Ежедневно · 08:00–21:00",
+    "image": "loc_nazar",
+    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%9F%D0%B5%D0%BA%D0%B0%D1%80%D0%BD%D1%8F%20N5%20%D0%9D%D0%B0%D0%B7%D0%B0%D1%80%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%2052"
+  },
+  {
+    "title": "Батыр Молл",
+    "note": "ул. Торайгырова, 58",
+    "hours": "Ежедневно · 10:00–22:00",
+    "image": "loc_batyr",
+    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%91%D0%B0%D1%82%D1%8B%D1%80%20%D0%9C%D0%BE%D0%BB%D0%BB%20%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80%D0%BE%D0%B2%D0%B0%2058"
+  },
+  {
+    "title": "Павильон на набережной",
+    "note": "ул. Астана, 100/4, киоск",
+    "hours": "Пн–Чт 09:00–22:00 · Пт–Вс 09:00–00:00",
+    "image": "loc_astana",
+    "mapUrl": "https://2gis.kz/pavlodar/geo/70030076544816078"
+  }
+];
+const PROMOTIONS = [
+  {
+    "id": "p1",
+    "accent": "#e4b055",
+    "badge": "−10%",
+    "title": "Комбо 3 булочки",
+    "subtitle": "любые 3 булочки с витрины",
+    "image": "bun",
+    "details": "Выбирайте любые 3 булочки с витрины и получайте скидку 10%.",
+    "actionLabel": "Выбрать булочки",
+    "route": "/menu/bake"
+  },
+  {
+    "id": "p2",
+    "accent": "#2fd29a",
+    "badge": "−10%",
+    "title": "Комбо 4 круассана",
+    "subtitle": "от 4 штук",
+    "image": "croiss2",
+    "details": "Все виды круассанов с витрины со скидкой 10% при покупке от 4 штук.",
+    "actionLabel": "Выбрать круассаны",
+    "route": "/menu/bake"
+  },
+  {
+    "id": "p3",
+    "accent": "#ff8a3d",
+    "badge": "−30%",
+    "title": "Выпечка после 20:00",
+    "subtitle": "ежедневно",
+    "image": "croissant",
+    "details": "Скидка 30% на всю свежую выпечку ежедневно после 20:00.",
+    "actionLabel": "Смотреть выпечку",
+    "route": "/menu/bake"
+  },
+  {
+    "id": "p4",
+    "accent": "#7ab7ff",
+    "badge": "BOX",
+    "title": "Детский бокс",
+    "subtitle": "фри, бургер, наггетсы",
+    "image": "kids",
+    "details": "Вкусный сет для детей: хрустящая картошка фри, сочный бургер и наггетсы.",
+    "actionLabel": "Заказать бокс",
+    "route": "/product/kids0"
+  }
+];
+const HOME_TILES = [
+  {
+    "category": "hot",
+    "label": "Кофе",
+    "image": "latte"
+  },
+  {
+    "category": "cold",
+    "label": "Лимонады",
+    "image": "bumble"
+  },
+  {
+    "category": "dess",
+    "label": "Десерты",
+    "image": "honey"
+  },
+  {
+    "category": "bake",
+    "label": "Выпечка",
+    "image": "croissant"
+  }
+];
+const ATMOSPHERE_IMAGES = [
+  "1",
+  "in1",
+  "wall",
+  "in2",
+  "3",
+  "note",
+  "latte",
+  "tea",
+  "honey",
+  "berry",
+  "brulee",
+  "choc"
+];
