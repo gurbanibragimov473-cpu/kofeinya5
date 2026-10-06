@@ -34,6 +34,10 @@ const ICONS = {
   tea: '<path d="M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l8-8"/>',
   dessert: '<path d="M4 20h16v-6H4zM6 14v-3h12v3M12 11V7"/>',
   bakery: '<path d="M4 15c1-5 5-8 8-8s7 3 8 8l-3 1-2-3-3 1-3-1-2 3z"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  route: '<path d="M3 11l18-8-8 18-2-8z"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  play: '<path d="M8 5l11 7-11 7z"/>',
   kids: '<circle cx="12" cy="12" r="8"/><path d="M9 10h.01M15 10h.01M8.5 14c1 1.8 5.9 1.8 7 0"/>'
 };
 
@@ -50,7 +54,7 @@ const TAB_BAR = [
 ];
 
 const SCENES = {
-  home: 'home', menu: 'menu', product: 'menu', loyalty: 'qr', profile: 'profile', places: 'places', cart: 'cart'
+  home: 'home', menu: 'menu', product: 'menu', gallery: 'home', loyalty: 'qr', profile: 'profile', places: 'places', cart: 'cart'
 };
 
 const icon = (name, extraClass = '') => `<svg class="icon ${extraClass}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
@@ -212,6 +216,107 @@ function openPromotion(promotionId) {
     location.hash = `#${promotion.route}`;
   });
   $('[data-close]').addEventListener('click', () => closeModal());
+}
+
+function openLocation(index) {
+  const location = LOCATIONS[index];
+  const today = (new Date().getDay() + 6) % 7;
+  const phone = location.phone || CHAIN_PHONE;
+  const routeUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`;
+  const week = DAY_NAMES.map((day, dayIndex) => `
+    <div class="week-row ${dayIndex === today ? 'is-today' : ''}"><span>${day}</span><b>${location.week[dayIndex]}</b></div>`).join('');
+
+  openModal(`
+    <img class="modal-cover" src="assets/${location.image}.jpg" alt="${location.title}">
+    <div class="modal-body modal-left">
+      <h3>${location.title}</h3>
+      <div class="detail-line">${icon('places')}<div><small>Точный адрес</small><b>${location.address}</b></div></div>
+      ${location.landmark ? `<div class="detail-line">${icon('map')}<div><small>Ориентир</small><b>${location.landmark}</b></div></div>` : ''}
+      <div class="week"><small>График работы</small>${week}</div>
+      <a class="btn" target="_blank" rel="noopener" href="${routeUrl}">${icon('route')}Проложить маршрут</a>
+      <div class="modal-actions">
+        <a class="btn btn-glass" href="tel:${phone.tel}">${icon('phone')}Позвонить</a>
+        <a class="btn btn-glass" target="_blank" rel="noopener" href="${location.mapUrl}">${icon('map')}2GIS</a>
+      </div>
+      <button class="btn btn-glass" data-close type="button">Закрыть</button>
+    </div>`, 'modal-location');
+  $('[data-close]').addEventListener('click', () => closeModal());
+}
+
+/* Lightbox */
+
+let lightboxIndex = 0;
+let lightboxTouchX = null;
+
+function renderLightbox() {
+  const item = MEDIA_ITEMS[lightboxIndex];
+  $('#lightboxStage').innerHTML = item.type === 'video'
+    ? `<video src="assets/${item.source}.mp4" poster="assets/${item.source}.jpg" controls autoplay loop playsinline></video>`
+    : `<img src="assets/${item.source}.jpg" alt="">`;
+  $('#lightboxCounter').textContent = `${lightboxIndex + 1} / ${MEDIA_ITEMS.length}`;
+}
+
+function openLightbox(index) {
+  lightboxIndex = index;
+  renderLightbox();
+  $('#lightbox').classList.add('is-open');
+  $('#lightbox').setAttribute('aria-hidden', 'false');
+  document.body.classList.add('lightbox-open');
+}
+
+function closeLightbox() {
+  $('#lightbox').classList.remove('is-open');
+  $('#lightbox').setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('lightbox-open');
+  window.setTimeout(() => { $('#lightboxStage').innerHTML = ''; }, 300);
+}
+
+function stepLightbox(direction) {
+  lightboxIndex = (lightboxIndex + direction + MEDIA_ITEMS.length) % MEDIA_ITEMS.length;
+  renderLightbox();
+}
+
+function setupLightbox() {
+  const lightbox = $('#lightbox');
+  $('#lightboxClose').innerHTML = icon('close');
+  $('#lightboxPrev').innerHTML = icon('back');
+  $('#lightboxNext').innerHTML = icon('chevron');
+  $('#lightboxClose').addEventListener('click', closeLightbox);
+  $('#lightboxPrev').addEventListener('click', () => stepLightbox(-1));
+  $('#lightboxNext').addEventListener('click', () => stepLightbox(1));
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox || event.target.id === 'lightboxStage') closeLightbox();
+  });
+  lightbox.addEventListener('touchstart', (event) => { lightboxTouchX = event.touches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', (event) => {
+    if (lightboxTouchX === null) return;
+    const distance = event.changedTouches[0].clientX - lightboxTouchX;
+    lightboxTouchX = null;
+    if (Math.abs(distance) > 60) stepLightbox(distance < 0 ? 1 : -1);
+  });
+  window.addEventListener('keydown', (event) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'ArrowLeft') stepLightbox(-1);
+    if (event.key === 'ArrowRight') stepLightbox(1);
+  });
+}
+
+function bindMediaButtons(root) {
+  $$('[data-media]', root).forEach((button) => button.addEventListener('click', () => openLightbox(Number(button.dataset.media))));
+}
+
+function bindLocationCards(root) {
+  $$('[data-location]', root).forEach((card) => {
+    const open = () => openLocation(Number(card.dataset.location));
+    card.addEventListener('click', (event) => {
+      if (event.target.closest('a')) return;
+      open();
+    });
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') open();
+    });
+  });
 }
 
 /* Sound and effects */
@@ -428,28 +533,29 @@ function buildQrSvg(token, animated) {
 
 /* Views */
 
+function renderMediaButtons(className) {
+  return MEDIA_ITEMS.map((item, index) => `
+    <button class="${className}" data-media="${index}" type="button" aria-label="Открыть на весь экран">
+      ${item.type === 'video'
+    ? `<video src="assets/${item.source}.mp4" poster="assets/${item.source}.jpg" autoplay muted loop playsinline></video><span class="media-play">${icon('play')}</span>`
+    : `<img loading="lazy" src="assets/${item.source}.jpg" alt="">`}
+    </button>`).join('');
+}
+
 function renderHome() {
   const newProducts = ALL_PRODUCTS.filter((product) => product.badge === 'new');
-  const mainLocation = LOCATIONS[0];
   const progress = Math.min(100, state.cups / FREE_DRINK_THRESHOLD * 100);
-  const atmosphereCards = [
-    { type: 'video', source: 'video-extra' },
-    { type: 'video', source: 'v2' },
-    { type: 'video', source: 'v3' },
-    ...ATMOSPHERE_IMAGES.map((source) => ({ type: 'image', source }))
-  ].map((item) => `
-    <div class="atmosphere-card">${item.type === 'video'
-    ? `<video src="assets/${item.source}.mp4" poster="assets/${item.source}.jpg" autoplay muted loop playsinline></video>`
-    : `<img loading="lazy" src="assets/${item.source}.jpg" alt="">`}</div>`).join('');
 
   return `
     <div class="page">
       <section class="hero">
-        <h1>Не просто<br><em>кофе</em></h1>
-        <p>Авторские напитки, свежая выпечка и десерты. Каждый 6-й напиток — в подарок.</p>
-        <div class="hero-actions">
-          <a class="btn" href="#/menu">Смотреть меню</a>
-          <a class="btn btn-glass" href="#/places">Адреса</a>
+        <div class="hero-panel">
+          <h1>Не просто <em>кофе</em></h1>
+          <p>Авторские напитки, свежая выпечка и десерты. Каждый 6-й напиток — в подарок.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#/menu">Смотреть меню</a>
+            <a class="btn btn-glass" href="#/places">Адреса</a>
+          </div>
         </div>
       </section>
 
@@ -486,16 +592,20 @@ function renderHome() {
             <img src="assets/${product.image}.jpg" alt="${product.name}">${productBadge(product)}
             <button class="add-button" data-add="${product.id}" type="button" aria-label="Добавить">${icon('plus')}</button>
           </div>
-          <b>${product.name}</b><small>${priceLabel(product)}</small>
+          <div class="feed-product-info"><b>${product.name}</b><small>${priceLabel(product)}</small></div>
         </div>`).join(''))}
 
       ${sectionHead('Заходите', 'Адреса')}
-      ${renderLocationCard(mainLocation)}
+      ${renderLocationCard(LOCATIONS[0], 0)}
       <a class="btn btn-glass reveal" href="#/places">${icon('places')}Все адреса и режим работы</a>
 
-      ${sectionHead('Живая атмосфера', 'Атмосфера')}
-      ${renderFeed(atmosphereCards)}
+      ${sectionHead('Живая атмосфера', 'Атмосфера', '<a class="section-link" href="#/gallery">Вся галерея</a>')}
+      ${renderFeed(renderMediaButtons('atmosphere-card'))}
     </div>`;
+}
+
+function renderGallery() {
+  return `<div class="page">${sectionHead('Фото и видео', 'Галерея')}<div class="media-grid">${renderMediaButtons('media-tile')}</div></div>`;
 }
 
 function renderProductList() {
@@ -512,14 +622,14 @@ function renderProductList() {
   if (!categories.length) return '<p class="empty-note">Ничего не найдено</p>';
 
   return categories.map((category) => `
-    ${sectionHead(`${category.products.length} поз.`, category.name)}
+    <div class="divider"></div>${sectionHead(`${category.products.length} поз.`, category.name)}
     <div class="product-grid">
       ${category.products.map((product) => `
         <div class="product-card reveal" data-href="#/product/${product.id}">
           <div class="product-media">
             <img loading="lazy" src="assets/${product.image}.jpg" alt="${product.name}">
             ${productBadge(product)}
-            <span class="price-tag">${priceLabel(product)}</span>
+            <span class="price-tag ${product.badge ? 'is-hot' : ''}">${priceLabel(product)}</span>
             <button class="add-button" data-add="${product.id}" type="button" title="+ Добавить" aria-label="Добавить">${icon('plus')}</button>
           </div>
           <div class="product-info"><b>${product.name}</b><small>${product.sizes.map((size) => size.label).join(' · ')}</small></div>
@@ -619,9 +729,9 @@ function renderCart() {
     </div>`;
 }
 
-function renderLocationCard(location) {
+function renderLocationCard(location, index) {
   return `
-    <div class="location-card reveal">
+    <div class="location-card reveal" data-location="${index}" role="button" tabindex="0">
       <img src="assets/${location.image}.jpg" alt="${location.title}" loading="lazy">
       <div class="location-info">
         <h3>${location.title}</h3>
@@ -632,7 +742,7 @@ function renderLocationCard(location) {
     </div>`;
 }
 
-const renderPlaces = () => `<div class="page">${sectionHead('Режим работы', 'Адреса')}${LOCATIONS.map(renderLocationCard).join('')}</div>`;
+const renderPlaces = () => `<div class="page">${sectionHead('Режим работы', 'Адреса')}${LOCATIONS.map((location, index) => renderLocationCard(location, index)).join('')}</div>`;
 
 function renderLoyalty() {
   return `
@@ -926,6 +1036,15 @@ function bindProductCards(root) {
   });
 }
 
+let dimTimer = null;
+function pulseDim(duration) {
+  document.body.classList.add('is-dimmed');
+  window.clearTimeout(dimTimer);
+  dimTimer = window.setTimeout(() => {
+    if (document.body.dataset.route !== 'product') document.body.classList.remove('is-dimmed');
+  }, duration);
+}
+
 function mountMenu() {
   const refreshList = () => {
     const list = $('#menuList');
@@ -939,6 +1058,7 @@ function mountMenu() {
   });
   $$('.category').forEach((button) => button.addEventListener('click', () => {
     menuCategory = button.dataset.category;
+    pulseDim(1100);
     $$('.category').forEach((item) => item.classList.toggle('is-active', item === button));
     button.parentNode.scrollTo({ left: button.offsetLeft - 60, behavior: 'smooth' });
     refreshList();
@@ -1065,7 +1185,7 @@ function renderRoute() {
   closeModal(true);
 
   const { name, param } = parseHash();
-  const knownRoutes = ['home', 'menu', 'product', 'loyalty', 'cart', 'profile', 'places'];
+  const knownRoutes = ['home', 'menu', 'product', 'loyalty', 'cart', 'profile', 'places', 'gallery'];
   const routeName = knownRoutes.includes(name) ? name : 'home';
   const hash = location.hash.slice(1) || '/home';
   if (routeName === 'menu' && MENU_CATEGORIES.some((category) => category.id === param)) {
@@ -1073,7 +1193,7 @@ function renderRoute() {
     menuQuery = '';
   }
 
-  const activeTab = routeName === 'product' ? 'menu' : routeName;
+  const activeTab = routeName === 'product' ? 'menu' : (routeName === 'gallery' ? 'home' : routeName);
   const previousEntry = routeHistory[routeHistory.length - 2];
   const goingBack = previousEntry === hash
     || (routeName !== 'product' && currentTab !== 'product' && tabIndex(activeTab) < tabIndex(currentTab));
@@ -1088,7 +1208,8 @@ function renderRoute() {
     loyalty: renderLoyalty,
     cart: renderCart,
     profile: renderProfile,
-    places: renderPlaces
+    places: renderPlaces,
+    gallery: renderGallery
   };
   view.innerHTML = views[routeName]();
   window.scrollTo(0, 0);
@@ -1096,6 +1217,8 @@ function renderRoute() {
 
   $('#appHeader').classList.toggle('has-back', routeName !== 'home');
   $('#appHeader').classList.remove('is-scrolled');
+  document.body.dataset.route = routeName;
+  document.body.classList.toggle('is-dimmed', routeName === 'product');
   setBackdropScene(routeName);
   renderTabBar(activeTab);
 
@@ -1107,6 +1230,8 @@ function renderRoute() {
   if (routeName === 'profile') mountProfile();
 
   bindProductCards(view);
+  bindLocationCards(view);
+  bindMediaButtons(view);
   $$('.feed-arrow', view).forEach((arrow) => arrow.addEventListener('click', () => {
     arrow.parentNode.querySelector('.feed').scrollBy({ left: Number(arrow.dataset.direction) * 260, behavior: 'smooth' });
   }));
@@ -1115,6 +1240,7 @@ function renderRoute() {
 
 function initialize() {
   setupLogoSymbol();
+  setupLightbox();
   $('#backButton').innerHTML = icon('back');
   $('#refreshButton').innerHTML = icon('refresh');
   $('#backButton').addEventListener('click', () => {

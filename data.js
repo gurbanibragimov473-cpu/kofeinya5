@@ -1044,43 +1044,64 @@ const SYRUPS = [
   "Айриш",
   "Амаретто"
 ];
+const DAY_NAMES = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+const CHAIN_PHONE = { tel: '+77054934183', label: '+7 705 493 41 83' };
+const everyDay = (hours) => DAY_NAMES.map(() => hours);
+
 const LOCATIONS = [
   {
-    "title": "ул. Торайгырова, 36",
-    "note": "1 этаж",
-    "hours": "Пн — Вс · 08:00–23:00",
-    "image": "in1",
-    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80%D0%BE%D0%B2%D0%B0%2036%20%D0%9A%D0%BE%D1%84%D0%B5%D0%B9%D0%BD%D1%8F%20N5"
+    title: 'ул. Торайгырова, 36',
+    note: '1 этаж',
+    address: 'Павлодар, ул. Торайгырова, 36 (1 этаж)',
+    landmark: '',
+    hours: 'Пн — Вс · 08:00–23:00',
+    week: everyDay('08:00 – 23:00'),
+    phone: { tel: '+77475767985', label: '+7 (747) 576-79-85' },
+    image: 'in1',
+    mapUrl: 'https://2gis.kz/pavlodar/search/' + encodeURIComponent('Торайгырова 36 Кофейня N5')
   },
   {
-    "title": "ул. Сатпаева, 21",
-    "note": "",
-    "hours": "Ежедневно · 08:00–21:00",
-    "image": "loc_satp21",
-    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%9F%D0%B5%D0%BA%D0%B0%D1%80%D0%BD%D1%8F%20N5%20%D0%A1%D0%B0%D1%82%D0%BF%D0%B0%D0%B5%D0%B2%D0%B0%2021"
+    title: 'ул. Сатпаева, 21',
+    note: '',
+    address: 'Павлодар, ул. Сатпаева, 21',
+    landmark: '',
+    hours: 'Ежедневно · 08:00–21:00',
+    week: everyDay('08:00 – 21:00'),
+    image: 'loc_satp21',
+    mapUrl: 'https://2gis.kz/pavlodar/search/' + encodeURIComponent('Пекарня N5 Сатпаева 21')
   },
   {
-    "title": "ул. Назарбаева, 52",
-    "note": "",
-    "hours": "Ежедневно · 08:00–21:00",
-    "image": "loc_nazar",
-    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%9F%D0%B5%D0%BA%D0%B0%D1%80%D0%BD%D1%8F%20N5%20%D0%9D%D0%B0%D0%B7%D0%B0%D1%80%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%2052"
+    title: 'ул. Назарбаева, 52',
+    note: '',
+    address: 'Павлодар, ул. Назарбаева, 52',
+    landmark: '',
+    hours: 'Ежедневно · 08:00–21:00',
+    week: everyDay('08:00 – 21:00'),
+    image: 'loc_nazar',
+    mapUrl: 'https://2gis.kz/pavlodar/search/' + encodeURIComponent('Пекарня N5 Назарбаева 52')
   },
   {
-    "title": "Батыр Молл",
-    "note": "ул. Торайгырова, 58",
-    "hours": "Ежедневно · 10:00–22:00",
-    "image": "loc_batyr",
-    "mapUrl": "https://2gis.kz/pavlodar/search/%D0%91%D0%B0%D1%82%D1%8B%D1%80%20%D0%9C%D0%BE%D0%BB%D0%BB%20%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80%D0%BE%D0%B2%D0%B0%2058"
+    title: 'Батыр Молл',
+    note: 'ул. Торайгырова, 58',
+    address: 'Павлодар, ул. Торайгырова, 58',
+    landmark: 'ТРЦ «Батыр Молл»',
+    hours: 'Ежедневно · 10:00–22:00',
+    week: everyDay('10:00 – 22:00'),
+    image: 'loc_batyr',
+    mapUrl: 'https://2gis.kz/pavlodar/search/' + encodeURIComponent('Батыр Молл Торайгырова 58')
   },
   {
-    "title": "Павильон на набережной",
-    "note": "ул. Астана, 100/4, киоск",
-    "hours": "Пн–Чт 09:00–22:00 · Пт–Вс 09:00–00:00",
-    "image": "loc_astana",
-    "mapUrl": "https://2gis.kz/pavlodar/geo/70030076544816078"
+    title: 'Павильон на набережной',
+    note: 'ул. Астана, 100/4, киоск',
+    address: 'Павлодар, ул. Астана, 100/4 (киоск)',
+    landmark: 'Набережная, отдельный павильон',
+    hours: 'Пн–Чт 09:00–22:00 · Пт–Вс 09:00–00:00',
+    week: ['09:00 – 22:00', '09:00 – 22:00', '09:00 – 22:00', '09:00 – 22:00', '09:00 – 00:00', '09:00 – 00:00', '09:00 – 00:00'],
+    image: 'loc_astana',
+    mapUrl: 'https://2gis.kz/pavlodar/geo/70030076544816078'
   }
 ];
+
 const PROMOTIONS = [
   {
     "id": "p1",
@@ -1162,4 +1183,11 @@ const ATMOSPHERE_IMAGES = [
   "berry",
   "brulee",
   "choc"
+];
+
+const MEDIA_ITEMS = [
+  { type: 'video', source: 'video-extra' },
+  { type: 'video', source: 'v2' },
+  { type: 'video', source: 'v3' },
+  ...ATMOSPHERE_IMAGES.map((source) => ({ type: 'image', source }))
 ];

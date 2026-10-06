@@ -1,7 +1,7 @@
 (function runSplash() {
   const DRAW_MS = 1900;
   const FLASH_MS = 1100;
-  const ZOOM_MS = 1000;
+  const ZOOM_MS = 1250;
   const STATUS_STEPS = [
     [0, 'Загружаем меню и атмосферу...'],
     [35, 'Обжариваем зёрна...'],
@@ -158,13 +158,14 @@
     logoWrap.animate(
       [
         { transform: 'scale(1)', opacity: 1 },
-        { transform: 'scale(2.4)', opacity: 1, offset: 0.45 },
-        { transform: 'scale(11)', opacity: 0 }
+        { transform: 'scale(2.6)', opacity: 1, offset: 0.35 },
+        { transform: 'scale(14)', opacity: 1, offset: 0.7 },
+        { transform: 'scale(70)', opacity: 0 }
       ],
-      { duration: ZOOM_MS, easing: 'cubic-bezier(.6,0,.9,.45)', fill: 'forwards' }
+      { duration: ZOOM_MS, easing: 'cubic-bezier(.7,0,1,.55)', fill: 'forwards' }
     );
     splash.animate(
-      [{ opacity: 1 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }],
+      [{ opacity: 1 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }],
       { duration: ZOOM_MS, easing: 'ease-in', fill: 'forwards' }
     ).onfinish = finishSplash;
   }

@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#050907">
   <title>Кофейня N5 — не просто кофе</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="shortcut icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,16 +52,17 @@
     <div class="backdrop-layer backdrop-photo" data-scene="places" style="background-image:url(assets/1.jpg)"></div>
     <div class="backdrop-layer backdrop-photo" data-scene="cart" style="background-image:url(assets/3.jpg)"></div>
     <div class="backdrop-scrim"></div>
+    <div class="backdrop-dim"></div>
   </div>
 
   <header id="appHeader">
     <button class="icon-button" id="backButton" type="button" aria-label="Назад"></button>
     <div class="brand">
       <svg class="logo-mark brand-logo" aria-hidden="true"><use href="#logo-symbol" width="100%" height="100%"/></svg>
-      <div class="flip" aria-label="Кофейня 5, Пекарня 5">
+      <div class="flip" aria-label="Кофейня №5, Пекарня №5">
         <div class="flip-card">
-          <span class="flip-face flip-front">Кофейня 5</span>
-          <span class="flip-face flip-back">Пекарня 5</span>
+          <span class="flip-face flip-front">Кофейня №5</span>
+          <span class="flip-face flip-back">Пекарня №5</span>
         </div>
       </div>
     </div>
@@ -71,6 +74,13 @@
   <div id="toast" role="status"></div>
   <div id="modal" aria-hidden="true"></div>
   <canvas id="celebration"></canvas>
+  <div id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Закрыть"></button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" type="button" aria-label="Предыдущее"></button>
+    <div class="lightbox-stage" id="lightboxStage"></div>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" type="button" aria-label="Следующее"></button>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
 
   <div id="splash">
     <video class="splash-video" src="assets/video-splash.mp4" poster="assets/video-splash.jpg" autoplay muted loop playsinline></video>
@@ -81,10 +91,13 @@
       </div>
     </div>
     <div class="splash-progress">
-      <div class="splash-meta"><span id="splashText">Загружаем меню и атмосферу...</span><b id="splashPercent">0%</b></div>
-      <div class="splash-track">
-        <div class="splash-fill" id="splashFill"></div>
-        <svg class="splash-cup" id="splashCup" aria-hidden="true"><use href="#brand-cup" width="100%" height="100%"/></svg>
+      <div class="splash-status" id="splashText">Загружаем меню и атмосферу...</div>
+      <div class="splash-bar">
+        <div class="splash-track">
+          <div class="splash-fill" id="splashFill"></div>
+          <svg class="splash-cup" id="splashCup" aria-hidden="true"><use href="#brand-cup" width="100%" height="100%"/></svg>
+        </div>
+        <b class="splash-percent" id="splashPercent">0%</b>
       </div>
     </div>
     <canvas id="splashCanvas"></canvas>
