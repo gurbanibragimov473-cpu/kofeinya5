@@ -1170,24 +1170,3 @@ const HOME_TILES = [
     "image": "croissant"
   }
 ];
-const ATMOSPHERE_IMAGES = [
-  "1",
-  "in1",
-  "wall",
-  "in2",
-  "3",
-  "note",
-  "latte",
-  "tea",
-  "honey",
-  "berry",
-  "brulee",
-  "choc"
-];
-
-const MEDIA_ITEMS = [
-  { type: 'video', source: 'video-extra' },
-  { type: 'video', source: 'v2' },
-  { type: 'video', source: 'v3' },
-  ...ATMOSPHERE_IMAGES.map((source) => ({ type: 'image', source }))
-];

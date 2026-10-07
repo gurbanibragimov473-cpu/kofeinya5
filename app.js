@@ -54,7 +54,7 @@ const TAB_BAR = [
 ];
 
 const SCENES = {
-  home: 'home', menu: 'menu', product: 'menu', gallery: 'home', loyalty: 'qr', profile: 'profile', places: 'places', cart: 'cart'
+  home: 'home', menu: 'menu', product: 'menu', loyalty: 'qr', profile: 'profile', places: 'places', cart: 'cart'
 };
 
 const icon = (name, extraClass = '') => `<svg class="icon ${extraClass}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
@@ -94,6 +94,7 @@ let menuCategory = 'all';
 let menuQuery = '';
 let cupSequence = 0;
 let currentTab = '';
+let activeRouteName = 'home';
 const routeHistory = [];
 const timers = { qr: null, qrTick: null, cupReset: null };
 
@@ -243,69 +244,6 @@ function openLocation(index) {
   $('[data-close]').addEventListener('click', () => closeModal());
 }
 
-/* Lightbox */
-
-let lightboxIndex = 0;
-let lightboxTouchX = null;
-
-function renderLightbox() {
-  const item = MEDIA_ITEMS[lightboxIndex];
-  $('#lightboxStage').innerHTML = item.type === 'video'
-    ? `<video src="assets/${item.source}.mp4" poster="assets/${item.source}.jpg" controls autoplay loop playsinline></video>`
-    : `<img src="assets/${item.source}.jpg" alt="">`;
-  $('#lightboxCounter').textContent = `${lightboxIndex + 1} / ${MEDIA_ITEMS.length}`;
-}
-
-function openLightbox(index) {
-  lightboxIndex = index;
-  renderLightbox();
-  $('#lightbox').classList.add('is-open');
-  $('#lightbox').setAttribute('aria-hidden', 'false');
-  document.body.classList.add('lightbox-open');
-}
-
-function closeLightbox() {
-  $('#lightbox').classList.remove('is-open');
-  $('#lightbox').setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('lightbox-open');
-  window.setTimeout(() => { $('#lightboxStage').innerHTML = ''; }, 300);
-}
-
-function stepLightbox(direction) {
-  lightboxIndex = (lightboxIndex + direction + MEDIA_ITEMS.length) % MEDIA_ITEMS.length;
-  renderLightbox();
-}
-
-function setupLightbox() {
-  const lightbox = $('#lightbox');
-  $('#lightboxClose').innerHTML = icon('close');
-  $('#lightboxPrev').innerHTML = icon('back');
-  $('#lightboxNext').innerHTML = icon('chevron');
-  $('#lightboxClose').addEventListener('click', closeLightbox);
-  $('#lightboxPrev').addEventListener('click', () => stepLightbox(-1));
-  $('#lightboxNext').addEventListener('click', () => stepLightbox(1));
-  lightbox.addEventListener('click', (event) => {
-    if (event.target === lightbox || event.target.id === 'lightboxStage') closeLightbox();
-  });
-  lightbox.addEventListener('touchstart', (event) => { lightboxTouchX = event.touches[0].clientX; }, { passive: true });
-  lightbox.addEventListener('touchend', (event) => {
-    if (lightboxTouchX === null) return;
-    const distance = event.changedTouches[0].clientX - lightboxTouchX;
-    lightboxTouchX = null;
-    if (Math.abs(distance) > 60) stepLightbox(distance < 0 ? 1 : -1);
-  });
-  window.addEventListener('keydown', (event) => {
-    if (!lightbox.classList.contains('is-open')) return;
-    if (event.key === 'Escape') closeLightbox();
-    if (event.key === 'ArrowLeft') stepLightbox(-1);
-    if (event.key === 'ArrowRight') stepLightbox(1);
-  });
-}
-
-function bindMediaButtons(root) {
-  $$('[data-media]', root).forEach((button) => button.addEventListener('click', () => openLightbox(Number(button.dataset.media))));
-}
-
 function bindLocationCards(root) {
   $$('[data-location]', root).forEach((card) => {
     const open = () => openLocation(Number(card.dataset.location));
@@ -435,11 +373,19 @@ function sectionHead(eyebrow, title, aside = '') {
 
 function renderFeed(itemsHtml) {
   return `
-    <div class="feed-wrap reveal">
+    <div class="feed-wrap">
       <button class="feed-arrow feed-arrow-prev" data-direction="-1" type="button" aria-label="Назад">${icon('back')}</button>
       <div class="feed">${itemsHtml}</div>
       <button class="feed-arrow feed-arrow-next" data-direction="1" type="button" aria-label="Вперёд">${icon('chevron')}</button>
     </div>`;
+}
+
+function renderBlock(eyebrow, title, content, aside = '') {
+  return `
+    <section class="block reveal">
+      <div class="block-head"><div><small class="eyebrow">${eyebrow}</small><h2>${title}</h2></div>${aside}</div>
+      ${content}
+    </section>`;
 }
 
 const productBadge = (product) => (product.badge
@@ -533,22 +479,38 @@ function buildQrSvg(token, animated) {
 
 /* Views */
 
-function renderMediaButtons(className) {
-  return MEDIA_ITEMS.map((item, index) => `
-    <button class="${className}" data-media="${index}" type="button" aria-label="Открыть на весь экран">
-      ${item.type === 'video'
-    ? `<video src="assets/${item.source}.mp4" poster="assets/${item.source}.jpg" autoplay muted loop playsinline></video><span class="media-play">${icon('play')}</span>`
-    : `<img loading="lazy" src="assets/${item.source}.jpg" alt="">`}
-    </button>`).join('');
-}
-
 function renderHome() {
   const newProducts = ALL_PRODUCTS.filter((product) => product.badge === 'new');
-  const progress = Math.min(100, state.cups / FREE_DRINK_THRESHOLD * 100);
+
+  const promotions = renderFeed(PROMOTIONS.map((promotion) => `
+    <button class="promo-card" data-promotion="${promotion.id}" style="--accent:${promotion.accent}" type="button">
+      <img src="assets/${promotion.image}.jpg" alt="${promotion.title}">
+      <i class="promo-shine"></i>
+      <span class="promo-badge">${promotion.badge}</span>
+      <div class="promo-body"><b>${promotion.title}</b><small>${promotion.subtitle}</small></div>
+    </button>`).join(''));
+
+  const tiles = `
+    <div class="tile-grid">
+      ${HOME_TILES.map((tile, index) => `
+        <a class="tile tile-${index + 1}" href="#/menu/${tile.category}">
+          <img src="assets/${tile.image}.jpg" alt=""><span>${tile.label}</span>${icon('chevron')}
+        </a>`).join('')}
+    </div>`;
+
+  const novelties = renderFeed(newProducts.map((product) => `
+    <div class="feed-product" data-href="#/product/${product.id}">
+      <div class="feed-product-media">
+        <img src="assets/${product.image}.jpg" alt="${product.name}">${productBadge(product)}
+        <button class="add-button" data-add="${product.id}" type="button" aria-label="Добавить">${icon('plus')}</button>
+      </div>
+      <div class="feed-product-info"><b>${product.name}</b><small>${priceLabel(product)}</small></div>
+    </div>`).join(''));
 
   return `
     <div class="page">
       <section class="hero">
+        <div class="hero-logo">${logoMark()}</div>
         <div class="hero-panel">
           <h1>Не просто <em>кофе</em></h1>
           <p>Авторские напитки, свежая выпечка и десерты. Каждый 6-й напиток — в подарок.</p>
@@ -559,53 +521,11 @@ function renderHome() {
         </div>
       </section>
 
-      <a class="card loyalty-teaser reveal" href="#/loyalty">
-        <div class="teaser-cup">${renderCup({ status: state.cups > 0 ? 'filled' : 'empty' })}</div>
-        <div class="teaser-text">
-          <h3>Карта гостя 5+1</h3>
-          <p>${state.cups < FREE_DRINK_THRESHOLD ? `До бесплатного напитка: ${remainingDrinks()}` : 'Следующий напиток — бесплатно'}</p>
-          <div class="progress"><i style="width:${progress}%"></i></div>
-        </div>
-      </a>
-
-      ${sectionHead('Предложения', 'Акции')}
-      ${renderFeed(PROMOTIONS.map((promotion) => `
-        <button class="promo-card" data-promotion="${promotion.id}" style="--accent:${promotion.accent}" type="button">
-          <img src="assets/${promotion.image}.jpg" alt="${promotion.title}">
-          <i class="promo-shine"></i>
-          <span class="promo-badge">${promotion.badge}</span>
-          <div class="promo-body"><b>${promotion.title}</b><small>${promotion.subtitle}</small></div>
-        </button>`).join(''))}
-
-      ${sectionHead('Выбирайте', 'Категории')}
-      <div class="tile-grid reveal">
-        ${HOME_TILES.map((tile, index) => `
-          <a class="tile tile-${index + 1}" href="#/menu/${tile.category}">
-            <img src="assets/${tile.image}.jpg" alt=""><span>${tile.label}</span>${icon('chevron')}
-          </a>`).join('')}
-      </div>
-
-      ${sectionHead('Только что в меню', 'Новинки', '<a class="section-link" href="#/menu">Всё меню</a>')}
-      ${renderFeed(newProducts.map((product) => `
-        <div class="feed-product" data-href="#/product/${product.id}">
-          <div class="feed-product-media">
-            <img src="assets/${product.image}.jpg" alt="${product.name}">${productBadge(product)}
-            <button class="add-button" data-add="${product.id}" type="button" aria-label="Добавить">${icon('plus')}</button>
-          </div>
-          <div class="feed-product-info"><b>${product.name}</b><small>${priceLabel(product)}</small></div>
-        </div>`).join(''))}
-
-      ${sectionHead('Заходите', 'Адреса')}
-      ${renderLocationCard(LOCATIONS[0], 0)}
-      <a class="btn btn-glass reveal" href="#/places">${icon('places')}Все адреса и режим работы</a>
-
-      ${sectionHead('Живая атмосфера', 'Атмосфера', '<a class="section-link" href="#/gallery">Вся галерея</a>')}
-      ${renderFeed(renderMediaButtons('atmosphere-card'))}
+      ${renderBlock('Предложения', 'Акции', promotions)}
+      ${renderBlock('Выбирайте', 'Категории', tiles)}
+      ${renderBlock('Только что в меню', 'Новинки', novelties, '<a class="section-link" href="#/menu">Всё меню</a>')}
+      ${renderBlock('Заходите', 'Адреса', `${renderLocationCard(LOCATIONS[0], 0)}<a class="btn btn-glass block-action" href="#/places">${icon('places')}Все адреса и режим работы</a>`)}
     </div>`;
-}
-
-function renderGallery() {
-  return `<div class="page">${sectionHead('Фото и видео', 'Галерея')}<div class="media-grid">${renderMediaButtons('media-tile')}</div></div>`;
 }
 
 function renderProductList() {
@@ -757,9 +677,12 @@ function renderLoyalty() {
         </div>
       </div>
 
-      ${sectionHead('Купи 5 — 6-й в подарок', 'Карта 5+1', '<div class="counter" id="cupsCounter"></div>')}
-      <div class="card glass reveal">
+      <div class="card glass reveal cups-card">
         <div class="cups-grid" id="cupsGrid"></div>
+        <div class="cups-title">
+          <div><small class="eyebrow">Купи 5 — 6-й в подарок</small><h2>Карта 5+1</h2></div>
+          <div class="counter" id="cupsCounter"></div>
+        </div>
         <p class="cups-caption" id="cupsCaption"></p>
         <button class="btn reward-button" id="openRewardButton" type="button" hidden>Бесплатный напиток доступен — показать купон</button>
       </div>
@@ -878,7 +801,7 @@ function generateQr(caption, onDone) {
     const captionElement = $('#qrCaption');
     if (!captionElement) return;
     $('#qrFrame').classList.remove('is-generating');
-    captionElement.innerHTML = `Покажите код бариста · карта ${state.cardId}`;
+    captionElement.remove();
     setQrControlsDisabled(false);
     if (onDone) onDone();
   }, QR_GENERATION_SECONDS * 1000);
@@ -1166,7 +1089,7 @@ function setBackdropScene(routeName) {
     const active = layer.dataset.scene === scene;
     layer.classList.toggle('is-active', active);
     if (layer.tagName === 'VIDEO') {
-      if (active) layer.play().catch(() => {});
+      if (active && !document.body.classList.contains('is-loading')) layer.play().catch(() => {});
       else layer.pause();
     }
   });
@@ -1185,7 +1108,7 @@ function renderRoute() {
   closeModal(true);
 
   const { name, param } = parseHash();
-  const knownRoutes = ['home', 'menu', 'product', 'loyalty', 'cart', 'profile', 'places', 'gallery'];
+  const knownRoutes = ['home', 'menu', 'product', 'loyalty', 'cart', 'profile', 'places'];
   const routeName = knownRoutes.includes(name) ? name : 'home';
   const hash = location.hash.slice(1) || '/home';
   if (routeName === 'menu' && MENU_CATEGORIES.some((category) => category.id === param)) {
@@ -1193,7 +1116,7 @@ function renderRoute() {
     menuQuery = '';
   }
 
-  const activeTab = routeName === 'product' ? 'menu' : (routeName === 'gallery' ? 'home' : routeName);
+  const activeTab = routeName === 'product' ? 'menu' : routeName;
   const previousEntry = routeHistory[routeHistory.length - 2];
   const goingBack = previousEntry === hash
     || (routeName !== 'product' && currentTab !== 'product' && tabIndex(activeTab) < tabIndex(currentTab));
@@ -1208,8 +1131,7 @@ function renderRoute() {
     loyalty: renderLoyalty,
     cart: renderCart,
     profile: renderProfile,
-    places: renderPlaces,
-    gallery: renderGallery
+    places: renderPlaces
   };
   view.innerHTML = views[routeName]();
   window.scrollTo(0, 0);
@@ -1218,6 +1140,7 @@ function renderRoute() {
   $('#appHeader').classList.toggle('has-back', routeName !== 'home');
   $('#appHeader').classList.remove('is-scrolled');
   document.body.dataset.route = routeName;
+  activeRouteName = routeName;
   document.body.classList.toggle('is-dimmed', routeName === 'product');
   setBackdropScene(routeName);
   renderTabBar(activeTab);
@@ -1231,7 +1154,6 @@ function renderRoute() {
 
   bindProductCards(view);
   bindLocationCards(view);
-  bindMediaButtons(view);
   $$('.feed-arrow', view).forEach((arrow) => arrow.addEventListener('click', () => {
     arrow.parentNode.querySelector('.feed').scrollBy({ left: Number(arrow.dataset.direction) * 260, behavior: 'smooth' });
   }));
@@ -1240,7 +1162,6 @@ function renderRoute() {
 
 function initialize() {
   setupLogoSymbol();
-  setupLightbox();
   $('#backButton').innerHTML = icon('back');
   $('#refreshButton').innerHTML = icon('refresh');
   $('#backButton').addEventListener('click', () => {
@@ -1249,6 +1170,7 @@ function initialize() {
   });
   $('#refreshButton').addEventListener('click', () => location.reload());
   window.addEventListener('hashchange', renderRoute);
+  window.addEventListener('splash-finished', () => setBackdropScene(activeRouteName));
   window.addEventListener('scroll', () => {
     $('#appHeader').classList.toggle('is-scrolled', window.scrollY > 30);
   }, { passive: true });
