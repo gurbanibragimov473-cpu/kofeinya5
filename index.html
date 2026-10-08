@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#050907">
-  <title>Кофейня N5 — не просто кофе</title>
+  <meta name="theme-color" content="#222222">
+  <title>Кофейня N5</title>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
@@ -14,87 +14,47 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="is-loading">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#fff3d6"/>
-        <stop offset=".5" stop-color="#f1d28b"/>
-        <stop offset="1" stop-color="#c9923a"/>
-      </linearGradient>
-      <pattern id="brandStripes" width="8" height="10" patternUnits="userSpaceOnUse">
+      <pattern id="cupStripes" width="8" height="10" patternUnits="userSpaceOnUse">
         <rect width="4" height="10" fill="#f6f1e6"/>
-        <rect x="4" width="4" height="10" fill="#0f5a40"/>
+        <rect x="4" width="4" height="10" fill="#1f7a52"/>
       </pattern>
     </defs>
     <symbol id="logo-symbol" viewBox="0 0 1 1"></symbol>
-    <symbol id="brand-cup" viewBox="0 0 44 56">
-      <path d="M16 0c-1.5 2 1.5 3 0 5M22 0c-1.5 2 1.5 3 0 5M28 0c-1.5 2 1.5 3 0 5" stroke="#f7d99a" fill="none" stroke-linecap="round" stroke-width="1.2" opacity=".75"/>
-      <path d="M8 14h28l-3.4 38a3 3 0 0 1-3 2.7H14.4a3 3 0 0 1-3-2.7z" fill="url(#brandStripes)" stroke="#e4b055" stroke-width="1.6" stroke-linejoin="round"/>
-      <rect x="5" y="9" width="34" height="7" rx="3" fill="#0f5a40" stroke="#e4b055" stroke-width="1.4"/>
-      <circle cx="22" cy="35" r="9" fill="#07130e" stroke="#e4b055" stroke-width="1"/>
-      <use href="#logo-symbol" x="14.5" y="27.5" width="15" height="15" fill="#f7d99a" fill-rule="evenodd"/>
+    <symbol id="cup-symbol" viewBox="0 0 44 56">
+      <path d="M8 14h28l-3.4 38a3 3 0 0 1-3 2.7H14.4a3 3 0 0 1-3-2.7z" fill="url(#cupStripes)" stroke="#d3ad62" stroke-width="1.6" stroke-linejoin="round"/>
+      <rect x="5" y="9" width="34" height="7" rx="3" fill="#1f7a52" stroke="#d3ad62" stroke-width="1.4"/>
+      <circle cx="22" cy="35" r="9" fill="#17261f" stroke="#d3ad62" stroke-width="1"/>
+      <use href="#logo-symbol" x="14.5" y="27.5" width="15" height="15" fill="#f7e2ae" fill-rule="evenodd"/>
     </symbol>
   </svg>
 
-  <div id="backdrop" aria-hidden="true">
-    <video class="backdrop-layer" data-scene="home" src="assets/video-qr.mp4" poster="assets/video-qr.jpg" muted loop playsinline preload="auto"></video>
-    <video class="backdrop-layer" data-scene="menu" src="assets/video-menu.mp4" poster="assets/video-menu.jpg" muted loop playsinline preload="metadata"></video>
-    <video class="backdrop-layer" data-scene="qr" src="assets/video-main.mp4" poster="assets/video-main.jpg" muted loop playsinline preload="metadata"></video>
-    <div class="backdrop-layer backdrop-photo" data-scene="profile" style="background-image:url(assets/photo-profile.jpg)"></div>
-    <div class="backdrop-layer backdrop-photo" data-scene="places" style="background-image:url(assets/1.jpg)"></div>
-    <div class="backdrop-layer backdrop-photo" data-scene="cart" style="background-image:url(assets/3.jpg)"></div>
-    <div class="backdrop-scrim"></div>
-    <div class="backdrop-dim"></div>
-  </div>
-
-  <header id="appHeader">
-    <button class="icon-button" id="backButton" type="button" aria-label="Назад"></button>
-    <div class="brand">
-      <svg class="logo-mark brand-logo" aria-hidden="true"><use href="#logo-symbol" width="100%" height="100%"/></svg>
-      <div class="flip" aria-label="Кофейня №5, Пекарня №5">
-        <div class="flip-card">
-          <span class="flip-face flip-front">Кофейня №5</span>
-          <span class="flip-face flip-back">Пекарня №5</span>
-        </div>
-      </div>
+  <header id="appBar">
+    <button class="bar-button" id="backButton" type="button" aria-label="Назад"></button>
+    <h1 id="pageTitle"></h1>
+    <div class="bar-actions">
+      <button class="bar-button" id="refreshButton" type="button" aria-label="Обновить"></button>
+      <a class="bar-button" id="cartButton" href="#/cart" aria-label="Корзина"><span class="cart-count" id="cartCount"></span></a>
     </div>
-    <button class="icon-button" id="refreshButton" type="button" aria-label="Обновить"></button>
   </header>
 
   <main id="view"></main>
   <nav id="tabBar" aria-label="Основная навигация"></nav>
   <div id="toast" role="status"></div>
   <div id="modal" aria-hidden="true"></div>
-  <canvas id="celebration"></canvas>
+
   <div id="splash">
-    <video class="splash-video" src="assets/video-splash.mp4" poster="assets/video-splash.jpg" autoplay muted loop playsinline></video>
-    <div class="splash-veil"></div>
-    <div class="splash-stage">
-      <div class="splash-logo" id="splashLogoWrap">
-        <svg id="splashLogo" viewBox="0 0 1 1" aria-hidden="true"></svg>
-      </div>
-    </div>
-    <div class="splash-progress">
-      <div class="splash-status" id="splashText">Загружаем меню и атмосферу...</div>
-      <div class="splash-bar">
-        <div class="splash-track">
-          <div class="splash-fill" id="splashFill"></div>
-          <svg class="splash-cup" id="splashCup" aria-hidden="true"><use href="#brand-cup" width="100%" height="100%"/></svg>
-        </div>
-        <b class="splash-percent" id="splashPercent">0%</b>
-      </div>
-    </div>
-    <canvas id="splashInk"></canvas>
-    <canvas id="splashCanvas"></canvas>
+    <svg class="splash-logo" aria-hidden="true"><use href="#logo-symbol" width="100%" height="100%"/></svg>
+    <div class="spinner"></div>
   </div>
 
   <script src="logos.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
-  <script src="splash.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kofeynya5-v8';
-const CORE_FILES = ['./', 'index.html', 'styles.css', 'app.js', 'splash.js', 'data.js', 'logos.js'];
+const CACHE_NAME = 'kofeynya5-v13';
+const CORE_FILES = ['./', 'index.html', 'styles.css', 'app.js', 'data.js', 'logos.js'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_FILES)));
