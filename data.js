@@ -1148,9 +1148,25 @@ const PROMOTIONS = [
     "route": "/product/kids0"
   }
 ];
-
-const HOME_VIDEOS = [
-  { source: 'video-main', title: 'Наша кофейня' },
-  { source: 'video-menu', title: 'Напитки и десерты' },
-  { source: 'video-qr', title: 'Как мы работаем' }
+const HOME_TILES = [
+  {
+    "category": "hot",
+    "label": "Кофе",
+    "image": "latte"
+  },
+  {
+    "category": "cold",
+    "label": "Лимонады",
+    "image": "bumble"
+  },
+  {
+    "category": "dess",
+    "label": "Десерты",
+    "image": "honey"
+  },
+  {
+    "category": "bake",
+    "label": "Выпечка",
+    "image": "croissant"
+  }
 ];
