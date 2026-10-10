@@ -1058,6 +1058,7 @@ const LOCATIONS = [
     week: everyDay('08:00 – 23:00'),
     phone: { tel: '+77475767985', label: '+7 (747) 576-79-85' },
     image: 'in1',
+    coords: null,
     mapUrl: 'https://2gis.kz/pavlodar/search/' + encodeURIComponent('Торайгырова 36 Кофейня N5')
   },
   {
@@ -1082,6 +1083,7 @@ const LOCATIONS = [
   },
   {
     title: 'Батыр Молл',
+    geoQuery: 'Батыр Молл, Павлодар',
     note: 'ул. Торайгырова, 58',
     address: 'Павлодар, ул. Торайгырова, 58',
     landmark: 'ТРЦ «Батыр Молл»',
@@ -1092,6 +1094,7 @@ const LOCATIONS = [
   },
   {
     title: 'Павильон на набережной',
+    geoQuery: 'улица Астана 100/4, Павлодар',
     note: 'ул. Астана, 100/4, киоск',
     address: 'Павлодар, ул. Астана, 100/4 (киоск)',
     landmark: 'Набережная, отдельный павильон',
@@ -1148,25 +1151,9 @@ const PROMOTIONS = [
     "route": "/product/kids0"
   }
 ];
-const HOME_TILES = [
-  {
-    "category": "hot",
-    "label": "Кофе",
-    "image": "latte"
-  },
-  {
-    "category": "cold",
-    "label": "Лимонады",
-    "image": "bumble"
-  },
-  {
-    "category": "dess",
-    "label": "Десерты",
-    "image": "honey"
-  },
-  {
-    "category": "bake",
-    "label": "Выпечка",
-    "image": "croissant"
-  }
+
+const HOME_VIDEOS = [
+  { source: 'video-main', title: 'Наша кофейня' },
+  { source: 'video-menu', title: 'Напитки и десерты' },
+  { source: 'video-qr', title: 'Как мы работаем' }
 ];
